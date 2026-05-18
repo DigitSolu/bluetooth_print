@@ -57,9 +57,14 @@ public class PrintContent {
                         Log.e(TAG,"******************* absolutePos: " + aPos +", relativePos: " + rPos +", fontZoom: " + fontZoom);
 
                         // 设置绝对打印位置，将当前打印位置设置到距离行首 n* hor_motion_unit 点
-                        esc.addSetAbsolutePrintPosition(aPos);
+                        // 只在明确指定位置时才发送，避免重置同行内的打印位置
+                        if(absolutePos > 0) {
+                              esc.addSetAbsolutePrintPosition(aPos);
+                        }
                         // 设置相对打印位置，将打印位置设置到距当前位置 n 点处
-                        esc.addSetRelativePrintPositon(rPos);
+                        if(relativePos != 0) {
+                              esc.addSetRelativePrintPositon(rPos);
+                        }
                         // 设置为倍高倍宽
                         esc.addSelectPrintModes(EscCommand.FONT.FONTA, emphasized, doubleheight, doublewidth, isUnderline);
                         EscCommand.ENABLE kanjiDoubleWidth  = (doublewidth  == EscCommand.ENABLE.ON || fontZoom > 1) ? EscCommand.ENABLE.ON : EscCommand.ENABLE.OFF;
@@ -68,6 +73,8 @@ public class PrintContent {
                         esc.addText(content);
                         // 取消倍高倍宽
                         esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);
+                        // 重置汉字模式，防止影响下一行
+                        esc.addSetKanjiFontMode(EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);
                   }else if("barcode".equals(type)){
                         esc.addSelectPrintingPositionForHRICharacters(EscCommand.HRI_POSITION.BELOW);
                         // 设置条码可识别字符位置在条码下方
