@@ -62,11 +62,9 @@ public class PrintContent {
                         esc.addSetRelativePrintPositon(rPos);
                         // 设置为倍高倍宽
                         esc.addSelectPrintModes(EscCommand.FONT.FONTA, emphasized, doubleheight, doublewidth, isUnderline);
-                        if(fontZoom>1){
-                              esc.addSetKanjiFontMode(EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);
-                        }else{
-                              esc.addSetKanjiFontMode(EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);
-                        }
+                        EscCommand.ENABLE kanjiDoubleWidth  = (doublewidth  == EscCommand.ENABLE.ON || fontZoom > 1) ? EscCommand.ENABLE.ON : EscCommand.ENABLE.OFF;
+                        EscCommand.ENABLE kanjiDoubleHeight = (doubleheight == EscCommand.ENABLE.ON || fontZoom > 1) ? EscCommand.ENABLE.ON : EscCommand.ENABLE.OFF;
+                        esc.addSetKanjiFontMode(kanjiDoubleWidth, kanjiDoubleHeight, EscCommand.ENABLE.OFF);
                         esc.addText(content);
                         // 取消倍高倍宽
                         esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);
@@ -102,7 +100,7 @@ public class PrintContent {
             }
 
             //打印走纸n个单位
-            esc.addPrintAndFeedLines((byte) 1);
+            esc.addPrintAndFeedLines((byte) 5);
 
             // 开钱箱
             esc.addGeneratePlus(LabelCommand.FOOT.F2, (byte) 255, (byte) 255);
